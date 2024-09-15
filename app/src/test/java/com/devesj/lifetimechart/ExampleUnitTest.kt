@@ -1,4 +1,4 @@
-package com.example.lifetimer
+package com.devesj.lifetimechart
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.lifetimer
+package com.devesj.lifetimechart
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

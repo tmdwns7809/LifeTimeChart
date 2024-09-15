@@ -1,4 +1,4 @@
-package com.example.lifetimer.time
+package com.devesj.lifetimechart.time
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

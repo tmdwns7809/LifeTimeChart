@@ -1,12 +1,12 @@
-package com.example.lifetimer.time
+package com.devesj.lifetimechart.time
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.lifetimer.db.AppDatabase
-import com.example.lifetimer.db.Time
-import com.example.lifetimer.repository.TimeRepository
+import com.devesj.lifetimechart.db.AppDatabase
+import com.devesj.lifetimechart.db.Time
+import com.devesj.lifetimechart.repository.TimeRepository
 import kotlinx.coroutines.launch
 
 class TimeViewModel(application: Application) : AndroidViewModel(application) {

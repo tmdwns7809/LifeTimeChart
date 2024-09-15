@@ -1,4 +1,4 @@
-package com.example.lifetimer.time
+package com.devesj.lifetimechart.time
 
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -8,18 +8,14 @@ import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.lifetimer.databinding.FragmentTimeBinding
-import com.example.lifetimer.db.Time
+import com.devesj.lifetimechart.databinding.FragmentTimeBinding
 
 
 class TimeFragment : Fragment() {
@@ -28,11 +24,6 @@ class TimeFragment : Fragment() {
     private var _binding: FragmentTimeBinding? = null
     private val binding get() = _binding!!
     private lateinit var timeReceiver: BroadcastReceiver
-
-    // 뷰모델은 ChartFragment랑 HistoryFragment에서 사용하면 될 듯
-    private val timeViewModel: TimeViewModel by viewModels {
-        TimeViewModelFactory(requireActivity().application)
-    }
 
     private var timeService: TimeService? = null
     private var isBound = false
@@ -103,11 +94,6 @@ class TimeFragment : Fragment() {
             val stopIntent = Intent(requireActivity(), TimeService::class.java)
             stopIntent.action = "RESET"
             requireActivity().startService(stopIntent)
-        }
-
-        // ViewModel의 LiveData 관찰
-        timeViewModel.allTimes.observe(viewLifecycleOwner) { data ->
-            var a = data.size
         }
 
         // 서비스 바인딩

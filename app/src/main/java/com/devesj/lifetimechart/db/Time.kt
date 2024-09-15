@@ -1,4 +1,4 @@
-package com.example.lifetimer.db
+package com.devesj.lifetimechart.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -9,5 +9,6 @@ data class Time(
     val name: String,
     val startTime: Long,
     val elapsedTime: Long,
+    val endTime: Long,
     val memo: String,
 )

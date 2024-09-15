@@ -1,8 +1,5 @@
-package com.example.lifetimer
+package com.devesj.lifetimechart
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -13,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.lifetimer.databinding.ActivityMainBinding
-import com.example.lifetimer.chart.ChartFragment
-import com.example.lifetimer.time.TimeFragment
+import com.devesj.lifetimechart.databinding.ActivityMainBinding
+import com.devesj.lifetimechart.chart.ChartFragment
+import com.devesj.lifetimechart.time.TimeFragment
 
 
 class MainActivity : AppCompatActivity() {

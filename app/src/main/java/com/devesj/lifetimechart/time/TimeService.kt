@@ -1,4 +1,4 @@
-package com.example.lifetimer.time
+package com.devesj.lifetimechart.time
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -12,14 +12,18 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.fragment.app.viewModels
-import com.example.lifetimer.db.Time
-import androidx.fragment.app.viewModels
-import com.example.lifetimer.db.AppDatabase
-import com.example.lifetimer.repository.TimeRepository
+import com.devesj.lifetimechart.db.Time
+import com.devesj.lifetimechart.db.AppDatabase
+import com.devesj.lifetimechart.repository.TimeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
+import kotlin.time.Duration
 
 class TimeService : Service() {
 
@@ -57,6 +61,9 @@ class TimeService : Service() {
 
         // TimeDao를 전달하여 TimeRepository를 생성
         repository = TimeRepository(timeDao)
+
+//        // 더미데이터 삽입
+//        insertDummy()
     }
 
     // Foreground Service 시작
@@ -95,6 +102,7 @@ class TimeService : Service() {
         val time = Time(name = "\uD83D\uDE03"
             , startTime = startTime
             , elapsedTime = elapsedTime
+            , endTime = startTime + elapsedTime
             , memo = "memo2")
 
         insertToDatabase(time)
@@ -160,6 +168,58 @@ class TimeService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             repository.insert(time)
         }
+    }
+
+    private fun insertDummy() {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.insertAll(listOf(
+                Time(name = "A"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-10 11:00:00")
+                    , memo = "memo"),
+                Time(name = "A"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-13 11:00:00")
+                    , memo = "memo"),
+                Time(name = "A"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-15 11:00:00")
+                    , memo = "memo"),
+                Time(name = "\uD83D\uDE03"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-11 11:00:00")
+                    , memo = "memo"),
+                Time(name = "\uD83D\uDE03"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-12 11:00:00")
+                    , memo = "memo"),
+                Time(name = "\uD83D\uDE03"
+                    , startTime = convertToLongTime("2024-09-10 10:00:00")
+                    , elapsedTime = convertElapsedTimeToMillis("01:00:00")
+                    , endTime = convertToLongTime("2024-09-14 11:00:00")
+                    , memo = "memo"),
+            ))
+        }
+    }
+
+    fun convertElapsedTimeToMillis(timeString: String): Long {
+        val parts = timeString.split(":").map { it.toLong() }
+        val hours = parts[0]
+        val minutes = parts[1]
+        val seconds = parts[2]
+
+        return (hours * 3600 + minutes * 60 + seconds) * 1000
+    }
+
+    fun convertToLongTime(dateString: String): Long {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val date: Date = format.parse(dateString)!!
+        return date.time
     }
 
     // Notification 채널 생성 (Android 8.0 이상 필요)

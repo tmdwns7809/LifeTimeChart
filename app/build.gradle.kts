@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lifetimer"
+    namespace = "com.devesj.lifetimechart"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.lifetimer"
+        applicationId = "com.devesj.lifetimechart"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
