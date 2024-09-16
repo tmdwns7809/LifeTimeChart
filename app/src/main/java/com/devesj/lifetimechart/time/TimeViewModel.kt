@@ -13,11 +13,13 @@ class TimeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: TimeRepository
     val allTimes: LiveData<List<Time>>
+    val allTimesReverse: LiveData<List<Time>>
 
     init {
         val timeDao = AppDatabase.getDatabase(application).timeDao()
         repository = TimeRepository(timeDao)
-        allTimes = repository.allUsers
+        allTimes = repository.allTimes
+        allTimesReverse = repository.allTimesReverse
     }
 
     fun insert(time: Time) = viewModelScope.launch {

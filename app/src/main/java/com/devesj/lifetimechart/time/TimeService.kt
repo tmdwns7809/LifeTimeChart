@@ -39,6 +39,8 @@ class TimeService : Service() {
         }
     }
 
+    private var name: String = "name"
+    private var color: Int = 0
     private var formattedTime: String = "00:00:00"
     private val channelId = "stopwatch_service_channel"
     private val notificationId = 1
@@ -69,9 +71,18 @@ class TimeService : Service() {
     // Foreground Service 시작
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            "START" -> startTimer()
-            "STOP" -> stopTimer()
-            "RESET" -> resetTimer()
+            "START" -> {
+                val newName = intent.getStringExtra("name") ?: ""
+                var save = true
+                if (newName == name) {
+                    updateDatabase(elapsedTime)
+                    save = false
+                }
+                resetTimer(save)
+                name = newName
+                color = intent.getIntExtra("color", 0)
+                startTimer()
+            }
         }
         return START_NOT_STICKY
     }
@@ -87,7 +98,7 @@ class TimeService : Service() {
         updateElapsedTime()
     }
 
-    private fun stopTimer() {
+    private fun stopTimer(save: Boolean) {
         if (!isRunning) {
             return
         }
@@ -98,8 +109,12 @@ class TimeService : Service() {
 //        stopForeground(STOP_FOREGROUND_DETACH)
 //        stopSelf()
 
+        if (!save) {
+            return
+        }
+
         // db 저장
-        val time = Time(name = "\uD83D\uDE03"
+        val time = Time(name = name
             , startTime = startTime
             , elapsedTime = elapsedTime
             , endTime = startTime + elapsedTime
@@ -108,8 +123,8 @@ class TimeService : Service() {
         insertToDatabase(time)
     }
 
-    private fun resetTimer() {
-        stopTimer()
+    private fun resetTimer(save: Boolean) {
+        stopTimer(save)
 
         elapsedTime = 0L
         startTime = System.currentTimeMillis()
@@ -150,6 +165,12 @@ class TimeService : Service() {
     fun getFormatElapsedTime(): String {
         return formattedTime
     }
+    fun getName(): String {
+        return name
+    }
+    fun getColor(): Int {
+        return color
+    }
 
     private fun makeElapsedTime() {
         elapsedTime = System.currentTimeMillis() - startTime
@@ -167,6 +188,12 @@ class TimeService : Service() {
     private fun insertToDatabase(time: Time) {
         CoroutineScope(Dispatchers.IO).launch {
             repository.insert(time)
+        }
+    }
+
+    private fun updateDatabase(addedTime: Long) {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.updateLastTime(addedTime)
         }
     }
 

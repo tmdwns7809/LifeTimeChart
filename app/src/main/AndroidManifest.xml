@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
     <application
         android:allowBackup="true"
@@ -29,7 +31,7 @@
             android:name=".time.TimeService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="shortService"
+            android:foregroundServiceType="health"
             />
     </application>
 

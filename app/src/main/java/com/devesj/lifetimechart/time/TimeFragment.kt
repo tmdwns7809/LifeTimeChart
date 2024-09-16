@@ -15,10 +15,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.devesj.lifetimechart.databinding.FragmentTimeBinding
+import com.devesj.lifetimechart.util.ColorUtil
 
 
-class TimeFragment : Fragment() {
+class TimeFragment : Fragment(), TimeNameItemAdapter.OnItemClickListener {
 
     // ViewBinding 변수를 선언
     private var _binding: FragmentTimeBinding? = null
@@ -40,6 +42,10 @@ class TimeFragment : Fragment() {
             isBound = false
         }
     }
+
+    private lateinit var adapter: TimeNameItemAdapter
+    private var selectedItem: String? = null
+    private var color: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,29 +84,38 @@ class TimeFragment : Fragment() {
         // ViewBinding 초기화
         _binding = FragmentTimeBinding.inflate(inflater, container, false)
 
-        binding.btnStart.setOnClickListener {
-            val startIntent = Intent(requireActivity(), TimeService::class.java)
-            startIntent.action = "START"
-            requireActivity().startService(startIntent)  // Android O 이하
-        }
-
-        binding.btnPause.setOnClickListener {
-            val stopIntent = Intent(requireActivity(), TimeService::class.java)
-            stopIntent.action = "STOP"
-            requireActivity().startService(stopIntent)
-        }
-
-        binding.btnReset.setOnClickListener {
-            val stopIntent = Intent(requireActivity(), TimeService::class.java)
-            stopIntent.action = "RESET"
-            requireActivity().startService(stopIntent)
-        }
-
         // 서비스 바인딩
         val intent = Intent(requireContext(), TimeService::class.java)
         requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
 
+        // 이름 목록 생성
+        adapter = TimeNameItemAdapter(
+            listOf("잠", "식사", "휴식", "여가", "집중", "정리")
+            , this)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.btnStart.setOnClickListener {
+            selectedItem?.let {
+                // 선택된 아이템의 이름을 사용하여 작업 수행
+                binding.name.text = it
+                val startIntent = Intent(requireActivity(), TimeService::class.java)
+                startIntent.action = "START"
+                startIntent.putExtra("name", it)  // 문자열 데이터 추가
+                startIntent.putExtra("color", color)
+                requireActivity().startService(startIntent)  // Android O 이하
+            } ?: run {
+                binding.name.text = "아이템이 선택되지 않았습니다."
+            }
+        }
+
         return binding.root
+    }
+
+    override fun onItemClick(name: String, color: Int) {
+        selectedItem = name
+        this.color = color
+        // 아이템의 색상으로 Fragment 배경색 변경
+        binding.fragmentLayout.setBackgroundColor(color)
     }
 
     private fun updateUIWithServiceData() {
@@ -109,6 +124,8 @@ class TimeFragment : Fragment() {
             val currentTime = it.getFormatElapsedTime()
             // 가져온 데이터를 텍스트뷰 등 UI에 반영
             binding.tvTimer.text = currentTime
+            binding.name.text = it.getName()
+            binding.fragmentLayout.setBackgroundColor(it.getColor())
         }
     }
 

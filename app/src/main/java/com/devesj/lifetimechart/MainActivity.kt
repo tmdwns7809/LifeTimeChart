@@ -12,12 +12,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.devesj.lifetimechart.databinding.ActivityMainBinding
 import com.devesj.lifetimechart.chart.ChartFragment
+import com.devesj.lifetimechart.history.HistoryFragment
 import com.devesj.lifetimechart.time.TimeFragment
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val REQUEST_CODE_NOTIFICATION_PERMISSION = 1001  // 권한 요청 코드
+    private val REQUEST_CODE_HEALTH_PERMISSION = 1002  // 권한 요청 코드
+    private val REQUEST_CODE_ACTIVITY_PERMISSION = 1003  // 권한 요청 코드
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,26 @@ class MainActivity : AppCompatActivity() {
                     this,
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                     REQUEST_CODE_NOTIFICATION_PERMISSION
+                )
+            }
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.FOREGROUND_SERVICE_HEALTH)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                // 권한 요청
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.FOREGROUND_SERVICE_HEALTH),
+                    REQUEST_CODE_HEALTH_PERMISSION
+                )
+            }
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACTIVITY_RECOGNITION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                // 권한 요청
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.ACTIVITY_RECOGNITION),
+                    REQUEST_CODE_ACTIVITY_PERMISSION
                 )
             }
         }
@@ -55,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_time -> selectedFragment = TimeFragment()
                 R.id.nav_chart -> selectedFragment = ChartFragment()
+                R.id.nav_history -> selectedFragment = HistoryFragment()
             }
             if (selectedFragment != null) {
                 supportFragmentManager.beginTransaction()

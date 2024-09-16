@@ -14,6 +14,7 @@ import com.devesj.lifetimechart.databinding.FragmentChartBinding
 import com.devesj.lifetimechart.db.Time
 import com.devesj.lifetimechart.time.TimeViewModel
 import com.devesj.lifetimechart.time.TimeViewModelFactory
+import com.devesj.lifetimechart.util.ColorUtil
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -22,6 +23,8 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -32,13 +35,13 @@ class ChartFragment : Fragment() {
     private var _binding: FragmentChartBinding? = null
     private val binding get() = _binding!!
 
-    // 뷰모델은 ChartFragment랑 HistoryFragment에서 사용하면 될 듯
     private val timeViewModel: TimeViewModel by viewModels {
         TimeViewModelFactory(requireActivity().application)
     }
 
     // 1일을 밀리초로 계산 (24시간 * 60분 * 60초 * 1000밀리초)
     val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
+    val GMTOffsetInMillis = TimeZone.getDefault().let { (it.rawOffset + it.dstSavings).toLong() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +67,7 @@ class ChartFragment : Fragment() {
                 return dateFormat.format(Date(millis))
             }
         }
+        xAxis.textColor = Color.WHITE
 
         // Y축 설정
         val yAxis = binding.lineChart.axisRight
@@ -77,6 +81,8 @@ class ChartFragment : Fragment() {
                 return dateFormat.format(Date(millis))
             }
         }
+        yAxis.textColor = Color.WHITE
+
         binding.lineChart.axisLeft.isEnabled = false
 
         return binding.root
@@ -115,7 +121,7 @@ class ChartFragment : Fragment() {
             fillZeroUntilLast(endDay, entries)
 
             val dataSet = LineDataSet(entries, pair.key)
-            dataSet.color = getColorForValue(i, map.size - 1)
+            dataSet.color = ColorUtil.getColorForValue(i, map.size - 1)
             dataSet.lineWidth = 2f
             dataSet.circleRadius = 4f
             dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.purple))
@@ -138,18 +144,6 @@ class ChartFragment : Fragment() {
         binding.lineChart.invalidate()
     }
 
-    private fun getColorForValue(value: Int, maxValue: Int): Int {
-        val startColor = Color.RED // 시작 색상: 빨간색
-        val endColor = Color.parseColor("#800080") // 종료 색상: 보라색 (Hex 코드)
-
-        // 값에 따른 비율 계산 (0.0 ~ 1.0)
-        val fraction = value.toFloat() / maxValue
-
-        // 색상 보간
-        val evaluator = ArgbEvaluator()
-        return evaluator.evaluate(fraction, startColor, endColor) as Int
-    }
-
     private fun fillZeroUntilLast(end: Long, entries: ArrayList<Entry>) {
         var lastDay = entries.last().x.toLong() * 1000
         if (lastDay != end) {
@@ -166,7 +160,7 @@ class ChartFragment : Fragment() {
 
     private fun stripTimeFromMillis(timeInMillis: Long): Long {
         // 하루 단위로 값을 계산
-        return (timeInMillis / ONE_DAY_IN_MILLIS) * ONE_DAY_IN_MILLIS
+        return ((timeInMillis + GMTOffsetInMillis) / ONE_DAY_IN_MILLIS) * ONE_DAY_IN_MILLIS
     }
 
     override fun onDestroyView() {
