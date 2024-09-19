@@ -15,6 +15,8 @@ import androidx.core.app.NotificationCompat
 import com.devesj.lifetimechart.db.Time
 import com.devesj.lifetimechart.db.AppDatabase
 import com.devesj.lifetimechart.repository.TimeRepository
+import com.devesj.lifetimechart.util.ColorUtil
+import com.devesj.lifetimechart.util.NameUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,8 +41,8 @@ class TimeService : Service() {
         }
     }
 
-    private var name: String = "name"
-    private var color: Int = 0
+    private var name: String = NameUtil.CATEGORIES[0]
+    private var color: Int = ColorUtil.getColorForValue(0, NameUtil.CATEGORIES.size-1)
     private var formattedTime: String = "00:00:00"
     private val channelId = "stopwatch_service_channel"
     private val notificationId = 1
@@ -117,8 +119,7 @@ class TimeService : Service() {
         val time = Time(name = name
             , startTime = startTime
             , elapsedTime = elapsedTime
-            , endTime = startTime + elapsedTime
-            , memo = "memo2")
+            , endTime = startTime + elapsedTime)
 
         insertToDatabase(time)
     }
@@ -152,8 +153,8 @@ class TimeService : Service() {
     // Notification 생성
     private fun getNotification(time: String): Notification {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Stopwatch Running")
-            .setContentText("Elapsed time: $time")
+            .setContentTitle(name)
+            .setContentText(time)
             .setSmallIcon(android.R.drawable.ic_menu_recent_history)
             .setOngoing(true) // 상시 알림 설정
             .build()
@@ -203,33 +204,27 @@ class TimeService : Service() {
                 Time(name = "A"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-10 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-10 11:00:00")),
                 Time(name = "A"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-13 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-13 11:00:00")),
                 Time(name = "A"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-15 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-15 11:00:00")),
                 Time(name = "\uD83D\uDE03"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-11 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-11 11:00:00")),
                 Time(name = "\uD83D\uDE03"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-12 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-12 11:00:00")),
                 Time(name = "\uD83D\uDE03"
                     , startTime = convertToLongTime("2024-09-10 10:00:00")
                     , elapsedTime = convertElapsedTimeToMillis("01:00:00")
-                    , endTime = convertToLongTime("2024-09-14 11:00:00")
-                    , memo = "memo"),
+                    , endTime = convertToLongTime("2024-09-14 11:00:00")),
             ))
         }
     }
@@ -255,7 +250,7 @@ class TimeService : Service() {
             val serviceChannel = NotificationChannel(
                 channelId,
                 "Stopwatch Service Channel",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel)

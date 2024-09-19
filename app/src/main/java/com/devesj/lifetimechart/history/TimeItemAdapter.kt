@@ -20,7 +20,6 @@ class TimeItemAdapter(private var times: List<Time>) :
         val startTimeTextView: TextView = itemView.findViewById(R.id.startTimeTextView)
         val durationTextView: TextView = itemView.findViewById(R.id.durationTextView)
         val endTimeTextView: TextView = itemView.findViewById(R.id.endTimeTextView)
-        val memoTextView: TextView = itemView.findViewById(R.id.memoTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeItemViewHolder {
@@ -36,10 +35,9 @@ class TimeItemAdapter(private var times: List<Time>) :
             timeZone = TimeZone.getTimeZone("UTC")
         }
         holder.nameTextView.text = time.name
-        holder.startTimeTextView.text = timeFormat.format(Date(time.startTime))
-        holder.durationTextView.text = durationFormat.format(Date(time.elapsedTime))
-        holder.endTimeTextView.text = timeFormat.format(Date(time.endTime))
-        holder.memoTextView.text = time.memo
+        holder.startTimeTextView.text = "시작시간: ${timeFormat.format(Date(time.startTime))}"
+        holder.durationTextView.text = "소요시간: ${durationFormat.format(Date(time.elapsedTime))}"
+        holder.endTimeTextView.text = "종료시간: ${timeFormat.format(Date(time.endTime))}"
     }
 
     override fun getItemCount(): Int = times.size

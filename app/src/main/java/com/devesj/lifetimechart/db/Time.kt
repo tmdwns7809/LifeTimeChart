@@ -10,5 +10,5 @@ data class Time(
     val startTime: Long,
     val elapsedTime: Long,
     val endTime: Long,
-    val memo: String,
+//    val memo: String,
 )

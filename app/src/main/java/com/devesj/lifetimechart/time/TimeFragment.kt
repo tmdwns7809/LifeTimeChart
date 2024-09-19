@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devesj.lifetimechart.databinding.FragmentTimeBinding
 import com.devesj.lifetimechart.util.ColorUtil
+import com.devesj.lifetimechart.util.NameUtil
 
 
 class TimeFragment : Fragment(), TimeNameItemAdapter.OnItemClickListener {
@@ -89,9 +90,7 @@ class TimeFragment : Fragment(), TimeNameItemAdapter.OnItemClickListener {
         requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
 
         // 이름 목록 생성
-        adapter = TimeNameItemAdapter(
-            listOf("잠", "식사", "휴식", "여가", "집중", "정리")
-            , this)
+        adapter = TimeNameItemAdapter(NameUtil.CATEGORIES, this)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.btnStart.setOnClickListener {
@@ -111,6 +110,10 @@ class TimeFragment : Fragment(), TimeNameItemAdapter.OnItemClickListener {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     override fun onItemClick(name: String, color: Int) {
         selectedItem = name
         this.color = color
@@ -121,11 +124,12 @@ class TimeFragment : Fragment(), TimeNameItemAdapter.OnItemClickListener {
     private fun updateUIWithServiceData() {
         // 서비스에서 데이터를 가져와서 UI 업데이트
         timeService?.let {
-            val currentTime = it.getFormatElapsedTime()
             // 가져온 데이터를 텍스트뷰 등 UI에 반영
-            binding.tvTimer.text = currentTime
-            binding.name.text = it.getName()
-            binding.fragmentLayout.setBackgroundColor(it.getColor())
+            binding.tvTimer.text = it.getFormatElapsedTime()
+            selectedItem = it.getName()
+            binding.name.text = selectedItem
+            color = it.getColor()
+            binding.fragmentLayout.setBackgroundColor(color)
         }
     }
 

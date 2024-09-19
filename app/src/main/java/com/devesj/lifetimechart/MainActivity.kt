@@ -1,8 +1,10 @@
 package com.devesj.lifetimechart
 
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -10,8 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.devesj.lifetimechart.databinding.ActivityMainBinding
 import com.devesj.lifetimechart.chart.ChartFragment
+import com.devesj.lifetimechart.databinding.ActivityMainBinding
 import com.devesj.lifetimechart.history.HistoryFragment
 import com.devesj.lifetimechart.time.TimeFragment
 
@@ -21,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_NOTIFICATION_PERMISSION = 1001  // 권한 요청 코드
     private val REQUEST_CODE_HEALTH_PERMISSION = 1002  // 권한 요청 코드
     private val REQUEST_CODE_ACTIVITY_PERMISSION = 1003  // 권한 요청 코드
+    private var currentFragment: Fragment? = null
+    private val CURRENT_FRAGMENT_KEY: String = "current_fragment_key"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +72,17 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // 초기 화면 설정 (HomeFragment)
-        supportFragmentManager.beginTransaction()
-            .replace(binding.fragmentContainer.id, TimeFragment()).commit()
+        if (savedInstanceState != null) {
+            // 저장된 프래그먼트 복원
+            currentFragment =
+                supportFragmentManager.getFragment(savedInstanceState, CURRENT_FRAGMENT_KEY)
+        } else {
+            // 초기 프래그먼트 설정
+            currentFragment = TimeFragment()
+            // 초기 화면 설정 (HomeFragment)
+            supportFragmentManager.beginTransaction()
+                .replace(binding.fragmentContainer.id, currentFragment as TimeFragment).commit()
+        }
 
         // 메뉴 아이템 클릭 리스너 설정
         binding.bottomNavigation.setOnItemSelectedListener  { item ->
@@ -87,4 +99,24 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // 현재 프래그먼트 저장
+        if (currentFragment != null && currentFragment!!.isAdded) {
+            supportFragmentManager.putFragment(outState, CURRENT_FRAGMENT_KEY, currentFragment!!)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.bottomNavigation.visibility = View.GONE
+        } else {
+            binding.bottomNavigation.visibility = View.VISIBLE
+        }
+    }
+
 }

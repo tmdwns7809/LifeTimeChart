@@ -1,6 +1,6 @@
 package com.devesj.lifetimechart.chart
 
-import android.animation.ArgbEvaluator
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,8 +23,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import java.text.SimpleDateFormat
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -139,6 +137,7 @@ class ChartFragment : Fragment() {
         val legend = binding.lineChart.legend
         legend.form = Legend.LegendForm.LINE
         legend.textSize = 12f
+        legend.textColor = Color.WHITE
 
         // Refresh the chart
         binding.lineChart.invalidate()
