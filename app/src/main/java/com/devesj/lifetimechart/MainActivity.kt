@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -31,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 화면 꺼짐 방지 플래그 설정
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // 안드로이드 13(API 33) 이상에서 알림 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

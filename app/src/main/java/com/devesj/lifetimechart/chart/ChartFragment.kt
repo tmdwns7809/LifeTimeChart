@@ -66,6 +66,9 @@ class ChartFragment : Fragment() {
             }
         }
         xAxis.textColor = Color.WHITE
+//        xAxis.granularity = 1f // X축에 최소 간격을 설정
+//        xAxis.isGranularityEnabled = true // 간격 설정 활성화
+        xAxis.labelCount = 1 // X축에 표시될 라벨 수 설정 (데이터 개수에 맞춰 설정)
 
         // Y축 설정
         val yAxis = binding.lineChart.axisRight
